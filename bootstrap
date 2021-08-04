@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for file in ${ZSHRC_D}/*.sh; do
+  [[ -r $file ]] && . $file
+done
+unset file
+
