@@ -82,3 +82,21 @@ upup () {
   popd
   wemake fetchers
 }
+
+newwidget () {
+  GREEN='\033[1;32m'
+  NORM='\033[m'
+  echo "New widget eh? Easy peazy."
+  echo -e "Create your new widget in ${GREEN}widgetView/newWidget.js${NORM}"
+  read trash\?"[Press enter to continue]"
+  echo -e "Import/export the new widget in ${GREEN}app/views/widgetView/index.js${NORM}"
+  read trash\?"[Press enter to continue]"
+  echo -e "Now define the widget-type in the enum in ${GREEN}app/message/index.js${NORM}"
+  read trash\?"[Press enter to continue]"
+  echo -e "Add the widget name to the classes used in ${GREEN}app/views/appView/index.js${NORM}"
+  read trash\?"[Press enter to continue]"
+  echo -e "Add the widget name to ${GREEN}app/views/widgetView/_style.scss${NORM}"
+  read trash\?"[Press enter to continue]"
+  echo -e "Finally, use the hyphenated shortcode in the ${GREEN}RfpCellsSpec${NORM} in the ruleset's index."
+  echo "Congrats"
+}
