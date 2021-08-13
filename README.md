@@ -7,6 +7,6 @@ Wherever you decide to clone this, here's the key to getting this repo plugged i
 Add the following to your `~/.bash(or whatever)rc`:
 
 ```
-BASHRC_D=~/.config/bashrc.d
-[[ -r ${BASHRC_D}/bootstrap ]] && . ${BASHRC_D}/bootstrap
+ZSHRC_D=~/.config/shell
+[[ -r ${ZSHRC_D}/bootstrap ]] && . ${ZSHRC_D}/bootstrap
 ```
