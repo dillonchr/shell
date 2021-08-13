@@ -100,3 +100,9 @@ newwidget () {
   echo -e "Finally, use the hyphenated shortcode in the ${GREEN}RfpCellsSpec${NORM} in the ruleset's index."
   echo "Congrats"
 }
+
+# start nodemon watching sign docs, it might lead to a 404 at first, but just you wait!
+signdocs () {
+  open -a Firefox "file:///Users/dillon/work/Wired-Enroll-Server/master.pdf"
+   docker exec we-server bash -c "source ~/.bashrc; cd /opt/apps/enroll; npx nodemon -w script/sign-docs.sh --exec script/sign-docs.sh"
+}
