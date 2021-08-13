@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# use venv already
+# whenever working with Python projects, I always name my venv "venv"
+# after following along in the Mega Flask tutorial I believe. Anyway,
+# the point is that I always use the same dir name and if I try to
+# activate that venv in a given directory, I probably thought it ought to
+# have the venv in the first place. So this tries to use the venv
+# and will instantiate it if it doesn't exist yet.
 vvv () {
   if [[ ! -d venv ]]
   then
@@ -10,12 +15,14 @@ vvv () {
   source venv/bin/activate
 }
 
-# my insane search
+# GREP is something I struggle at. So I wrote this a long time ago and gave
+# myself plenty of context and ignored all the folders that have thrown me
+# off the trail over the years. It ain't perfect but it's been great for me.
 ggg () {
   grep -rEnoi --exclude-dir={node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./src/app/} ".{0,10}$1.{0,10}" .
 }
 
-# generate some lorem text
+# generates n lines of text, defaults to 20 lines
 lorem () {
   LINES=$1
   if [ -z "$LINES" ]; then
