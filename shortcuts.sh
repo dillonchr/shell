@@ -28,7 +28,8 @@ lorem () {
   if [ -z "$LINES" ]; then
     LINES=20
   fi
-   tr -dc a-z1-4 </dev/urandom | tr 1-2 ' \n' | awk 'length==0 || length>50' | tr 3-4 ' ' | sed 's/^ *//' | cat -s | sed 's/ / /g' |fmt | head -n $LINES
+  export LC_CTYPE=C
+  tr -dc a-z1-4 </dev/urandom | tr 1-2 ' \n' | awk 'length==0 || length>50' | tr 3-4 ' ' | sed 's/^ *//' | cat -s | sed 's/ / /g' |fmt | head -n $LINES
 }
 
 # make sure dns is fresh
