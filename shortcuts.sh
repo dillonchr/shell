@@ -19,7 +19,12 @@ vvv () {
 # myself plenty of context and ignored all the folders that have thrown me
 # off the trail over the years. It ain't perfect but it's been great for me.
 ggg () {
-  grep -rEnoi --exclude-dir={node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./src/app/} ".{0,10}$1.{0,10}" .
+  if command -v toilet &> /dev/null
+  then
+    toilet -f pagga "gggrep:"
+    toilet -f smmono9 "$1"
+  fi
+  grep -rEnoi --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./src/app/} ".{0,10}$1.{0,10}" .
 }
 
 # generates n lines of text, defaults to 20 lines
