@@ -48,7 +48,22 @@ gitroot () {
   cd $(git rev-parse --show-toplevel)
 }
 
+gitprune () {
+  git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d
+}
+
+# pull latest and also merge masta
+uu () {
+  git fetch -p
+  git pull
+  git pull origin master
+}
+
 # probably don't need this anymore, but how macos gets nproc
 nproc () {
   sysctl -n hw.physicalcpu
+}
+
+dearkitty () {
+  KITTY_BASE=~/git/kitty ~/git/kitty/dearkitty
 }

@@ -20,7 +20,7 @@ cleanupenrolldocs () {
     -o -name 'cobra-cover*.pdf' \
     -o -name 'cobra-hipaa*.pdf' \
     -o -name 'eap*.pdf' \
-    -o -name 'shop-request*.pdf' | xargs rm
+    -o -name 'shop-request*.pdf' | xargs -I % sh -c 'rm "%";'
 }
 
 wemake () {
@@ -50,6 +50,12 @@ wemake () {
     bouncefetchers
     echo " 🌀 have a nice day"
   else
+    if (( $(tput cols) > 85 ));
+    then
+      cat ~/work/wiredenrollascii.txt
+    else
+      cat ~/work/wiredenrollascii-slim.txt
+    fi
     echo " 🤙 party on dudes"
   fi
 }
@@ -105,4 +111,27 @@ newwidget () {
 signdocs () {
   open -a Firefox "file:///Users/dillon/work/Wired-Enroll-Server/master.pdf"
    docker exec we-server bash -c "source ~/.bashrc; cd /opt/apps/enroll; npx nodemon -w script/sign-docs.sh --exec script/sign-docs.sh"
+}
+
+copynewbranchhash () {
+  echo -e "\`$(git hist --no-color | head -n 1 | sed 's/:.*$//g')\`" | pbcopy
+}
+
+fixpackagelock () {
+  git diff --name-only --diff-filter=U --relative | grep package-lock.json
+  if [ "$?" -eq "0" ]
+  then
+    rm package-lock.json
+    touch package-lock.json
+  fi
+}
+
+stagemerge () {
+  if [ -z "$(git status --porcelain)" ]; then
+    FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    git fetch -p
+    git checkout stage
+    git pull
+    git merge $FEATURE_BRANCH
+  fi
 }
