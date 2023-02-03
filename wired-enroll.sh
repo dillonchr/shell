@@ -20,6 +20,7 @@ cleanupenrolldocs () {
     -o -name 'cobra-cover*.pdf' \
     -o -name 'cobra-hipaa*.pdf' \
     -o -name 'eap*.pdf' \
+    -o -name 'combined*.pdf' \
     -o -name 'shop-request*.pdf' | xargs -I % sh -c 'rm "%";'
 }
 
@@ -134,4 +135,14 @@ stagemerge () {
     git pull
     git merge $FEATURE_BRANCH
   fi
+}
+
+blames () {
+  FILE_TO_BLAME="$1"
+  mkdir -p blames
+
+  for h in $(git log --format="%h" "$FILE_TO_BLAME")
+  do
+    git show "${h}:${FILE_TO_BLAME}" > "blames/${h}.${FILE_TO_BLAME##*.}"
+  done
 }

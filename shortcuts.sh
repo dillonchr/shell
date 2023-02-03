@@ -52,6 +52,11 @@ gitprune () {
   git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d
 }
 
+# delete all local branches if you can
+cleanbranches () {
+  git branch -a --no-color | sed "/^  remotes\//d" | sed "/^*/d" | sed "/^  stage$/d" | xargs git branch -d
+}
+
 # pull latest and also merge masta
 uu () {
   git fetch -p
