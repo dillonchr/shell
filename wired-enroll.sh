@@ -53,9 +53,34 @@ wemake () {
   else
     if (( $(tput cols) > 85 ));
     then
-      cat ~/work/wiredenrollascii.txt
+      cat <<EOL
+                                                                                E  E
+                                               EEEEE                            E  E
+                                             EEE   EEE                          E  E
+W     W   WW  W   WWWWW    WWWWWW WWWW       E                                  E  E
+WW   WW   W   W  WW   WW   W      WW WWWW    E              EE  EEEE            E  EE
+ WW  W W WW   W  W   WWW   W       W    WWW  EE          EEEEE  EE EE   EEEE    E   E
+  W W  WWW    W  WWWW      WWWWWW  WW     WW  EEEEEEE    E   E  E      EE  EEE   E  E
+   WW   WW    W  W  WW      W       W      W  EEEEEEE    E   E  E      E     EE  E  E
+   W     W   WW  W   WWW    W       W     WW  E          E   E  E      E      E  E  E
+             W   W     W    WWWWWW  WWWWWW    E              E  E      EEEE  EE  E  E
+                                    WW        EE        E                 EEEE   E  E
+                                               EEEEEEEEEE
+EOL
     else
-      cat ~/work/wiredenrollascii-slim.txt
+      cat <<EOL
+                 EEEEE
+W           W  EE     EEEE
+W     W     W  E         EEE
+W     W    WW EE
+WW    WW   W  E   EEEE
+ WW  WWW  WW  EEEEE  E
+  W  W W  W    EEEEEEE
+  WW W W WW   EE
+   W W WWW    E
+   WWW  WW    EEEEE
+                  EEEEEEEE
+EOL
     fi
     echo " 🤙 party on dudes"
   fi
