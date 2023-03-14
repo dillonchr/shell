@@ -15,15 +15,21 @@ vvv () {
   source venv/bin/activate
 }
 
+textbanner () {
+  if [[ -d ~/git/pppppprint/ ]]
+  then
+    echo "[=]$1" | python3 ~/git/pppppprint/print.py $(tput cols)
+  elif command -v toilet &> /dev/null
+  then
+    toilet -f pagga "$1"
+  fi
+}
+
 # GREP is something I struggle at. So I wrote this a long time ago and gave
 # myself plenty of context and ignored all the folders that have thrown me
 # off the trail over the years. It ain't perfect but it's been great for me.
 ggg () {
-  if command -v toilet &> /dev/null
-  then
-    toilet -f pagga "gggrep:"
-    toilet -f smmono9 "$1"
-  fi
+  textbanner "gggrep: $1"
   /usr/bin/grep -rEnoi --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} ".{0,10}$1.{0,10}" .
 }
 
@@ -39,7 +45,7 @@ lorem () {
 
 # make sure dns is fresh
 flushdns () {
-  sudo killall -HUP mDNSResponder
+  sudo killall -HUP mDNSResponder && textbanner "DNS: done"
 }
 alias -g cleardns="flushdns"
 
@@ -48,8 +54,10 @@ gitroot () {
   cd $(git rev-parse --show-toplevel)
 }
 
+# deletes all local branches already on the server
 gitprune () {
-  git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d
+  git fetch -p
+  git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | grep origin) | awk '{print $1}' | xargs git branch -d
 }
 
 # delete all local branches if you can
@@ -66,6 +74,7 @@ uu () {
 
 # show latest commit date for each origin/ branch
 remotecommitsage () {
+  textbanner "$(basename $PWD) remotes @ $(date)"
   for BR in $(git branch -a | grep "  remotes" | sed 's/  remotes\///' | tail -n +2)
   do
     echo "$BR $(git log --format=%cd $BR | head -n 1)"

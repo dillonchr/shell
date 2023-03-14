@@ -94,23 +94,28 @@ bouncefetchers () {
   docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/fetcher_cluster restart"
 }
 
+makequote () {
+  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/benefits && make"
+}
+
+bouncequotefetchers () {
+  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/benefits && script/fetcher_cluster restart"
+}
+
 # update all current branches and rebuild and bounce fetchers
 upup () {
   dirs -c
   pushd ~/work/Wired-Enroll
   git fetch -p
-  git pull
-  git pull origin master
+  uu
   popd
   pushd ~/work/Wired-Enroll-Server
   git fetch -p
-  git pull
-  git pull origin master
+  uu
   popd
   pushd ~/work/Wired-Quote
   git fetch -p
-  git pull
-  git pull origin master
+  uu
   popd
   wemake fetchers
 }
@@ -158,7 +163,7 @@ stagemerge () {
     git fetch -p
     git checkout stage
     git pull
-    git merge $FEATURE_BRANCH
+    git merge $FEATURE_BRANCH && wemake && git push
   fi
 }
 
