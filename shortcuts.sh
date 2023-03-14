@@ -24,7 +24,7 @@ ggg () {
     toilet -f pagga "gggrep:"
     toilet -f smmono9 "$1"
   fi
-  grep -rEnoi --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./src/app/} ".{0,10}$1.{0,10}" .
+  /usr/bin/grep -rEnoi --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} ".{0,10}$1.{0,10}" .
 }
 
 # generates n lines of text, defaults to 20 lines
@@ -62,6 +62,19 @@ uu () {
   git fetch -p
   git pull
   git pull origin master
+}
+
+# show latest commit date for each origin/ branch
+remotecommitsage () {
+  for BR in $(git branch -a | grep "  remotes" | sed 's/  remotes\///' | tail -n +2)
+  do
+    echo "$BR $(git log --format=%cd $BR | head -n 1)"
+  done
+}
+
+# show diff for copied commit hash and its parent
+viewlastdiff () {
+  COMHASH=$(pbpaste | awk '{$1=$1};1'); git diff "${COMHASH}~1" $COMHASH
 }
 
 # probably don't need this anymore, but how macos gets nproc
