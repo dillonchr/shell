@@ -86,6 +86,10 @@ EOL
   fi
 }
 
+wqmake () {
+  docker exec -it we-server bash -c 'source ~/.bashrc; cd /opt/apps/benefits; make; script/fetcher_cluster restart'
+}
+
 bounceserver () {
   docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/spin around"
 }
@@ -157,13 +161,47 @@ fixpackagelock () {
   fi
 }
 
+teststagemerge () {
+  if [ -z "$(git status --porcelain)" ]; then
+    FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
+      textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
+    else
+      textbanner "never mind"
+    fi
+    #git fetch -p
+    #git checkout stage
+    #git pull
+    #git merge $FEATURE_BRANCH
+    if [ "$?" -eq "0" ]
+    then
+      #pwd | grep Quote && wqmake || wemake
+      #git push
+      echo "go go gone"
+    else
+      textbanner "WHOOPS!"
+    fi
+  fi
+}
+
 stagemerge () {
   if [ -z "$(git status --porcelain)" ]; then
     FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
+      textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
+      git push
+    fi
     git fetch -p
     git checkout stage
     git pull
-    git merge $FEATURE_BRANCH && wemake && git push
+    git merge $FEATURE_BRANCH
+    if [ "$?" -eq "0" ]
+    then
+      pwd | grep Quote && wqmake || wemake
+      git push
+    else
+      textbanner "WHOOPS!"
+    fi
   fi
 }
 
@@ -175,4 +213,13 @@ blames () {
   do
     git show "${h}:${FILE_TO_BLAME}" > "blames/${h}.${FILE_TO_BLAME##*.}"
   done
+}
+
+expirationdates () {
+  cd ~/work/Wired-Enroll
+  ggg 'expirationDate: "' | awk '{print $3, $1}' | sort
+}
+
+servercheck () {
+  grep 'us-west-' /etc/hosts | awk '{print $2}' | xargs -I {} sh -c "ssh -o 'StrictHostKeyChecking no' astarr@{} 'hostname' || true"
 }

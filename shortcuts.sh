@@ -29,8 +29,9 @@ textbanner () {
 # myself plenty of context and ignored all the folders that have thrown me
 # off the trail over the years. It ain't perfect but it's been great for me.
 ggg () {
-  textbanner "gggrep: $1"
-  /usr/bin/grep -rEnoi --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} ".{0,10}$1.{0,10}" .
+  SEARCH="$1"
+  textbanner "gggrep: $SEARCH"
+  /usr/bin/grep -RliI --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} "$SEARCH" . | xargs grep -ioH ".\{0,10\}${SEARCH}.\{0,10\}"
 }
 
 # generates n lines of text, defaults to 20 lines
