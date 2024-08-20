@@ -31,7 +31,7 @@ textbanner () {
 ggg () {
   SEARCH="$1"
   textbanner "gggrep: $SEARCH"
-  /usr/bin/grep -RliI --exclude-dir={./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} "$SEARCH" . | xargs grep -ioH ".\{0,10\}${SEARCH}.\{0,10\}"
+  /usr/bin/grep -RliI --exclude-dir={./.ark,./config/agencies,node_modules,.next,.sass-cache,.git,Pods,build,public,__pycache__,tmp,db,test,test-docs.idea,.gems,spec,vendor,log,coverage,data,cache,packs,packs-test,./app/} "$SEARCH" . | xargs grep -ioH ".\{0,10\}${SEARCH}.\{0,10\}"
 }
 
 # generates n lines of text, defaults to 20 lines
@@ -95,3 +95,5 @@ nproc () {
 dearkitty () {
   KITTY_BASE=~/git/kitty ~/git/kitty/dearkitty
 }
+
+alias -g ts="date +\"%A %Y-%m-%d @ %H:%M\""

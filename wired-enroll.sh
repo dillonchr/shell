@@ -3,6 +3,7 @@
 cleanupenrolldocs () {
   find ~/Downloads -maxdepth 1\
     -name 'master*.pdf' \
+    -o -name 'common-ownership*.pdf' \
     -o -name 'gsd*.pdf' \
     -o -name 'plans*.pdf' \
     -o -name 'rates*.pdf' \
@@ -11,6 +12,7 @@ cleanupenrolldocs () {
     -o -name 'AWB.secret*.txt' \
     -o -name 'dental*.xlsx' \
     -o -name 'eft*.pdf' \
+    -o -name 'enrollment-secret*.xlsx' \
     -o -name 'initials*.pdf' \
     -o -name 'paperless*.pdf' \
     -o -name 'participation-agreement*.pdf' \
@@ -24,33 +26,7 @@ cleanupenrolldocs () {
     -o -name 'shop-request*.pdf' | xargs -I % sh -c 'rm "%";'
 }
 
-wemake () {
-  BOUNCE=$1
-  version=dev make -C ~/work/Wired-Enroll
-  if [ "$?" -ne "0" ]
-  then
-    echo "🤯 client broke!"
-    return 1
-  fi
-
-  version=dev make -C ~/work/Wired-Enroll-Server
-  if [ "$?" -ne "0" ]
-  then
-    echo "🤬 server broke!"
-    return 2
-  fi
-
-  if [ "$BOUNCE" = "fetchers" ]; then
-    bouncefetchers
-    echo " 🤺 ready Freddie"
-  elif [ "$BOUNCE" = "server" ]; then
-    bounceserver
-    echo " 🤓 it's ALIVE"
-  elif [ "$BOUNCE" = "all" ]; then
-    bounceserver
-    bouncefetchers
-    echo " 🌀 have a nice day"
-  else
+wiredenrollstamp () {
     if (( $(tput cols) > 85 ));
     then
       cat <<EOL
@@ -82,28 +58,100 @@ WW    WW   W  E   EEEE
                   EEEEEEEE
 EOL
     fi
+}
+
+#wemake () {
+#  BOUNCE=$1
+#  version=dev make -C ~/work/Wired-Enroll
+#  if [ "$?" -ne "0" ]
+#  then
+#    echo "🤯 client broke!"
+#    return 1
+#  fi
+#
+#  version=dev make -C ~/work/Wired-Enroll-Server
+#  if [ "$?" -ne "0" ]
+#  then
+#    echo "🤬 server broke!"
+#    return 2
+#  fi
+#
+#  if [ "$BOUNCE" = "fetchers" ]; then
+#    bouncefetchers
+#    echo " 🤺 ready Freddie"
+#  elif [ "$BOUNCE" = "server" ]; then
+#    bounceserver
+#    echo " 🤓 it's ALIVE"
+#  elif [ "$BOUNCE" = "all" ]; then
+#    bounceserver
+#    bouncefetchers
+#    echo " 🌀 have a nice day"
+#  else
+#    wiredenrollstamp
+#    echo " 🤙 party on dudes"
+#  fi
+#}
+
+wemake() {
+  BOUNCE=$1
+  version=dev make -C ~/Development/Wired-Enroll
+  if [ "$?" -ne "0" ]
+  then
+    echo "🤯 client broke!"
+    return 1
+  fi
+
+  version=dev make -C ~/Development/Wired-Enroll-Server
+  if [ "$?" -ne "0" ]
+  then
+    echo "🤬 server broke!"
+    return 2
+  fi
+
+  if [ "$BOUNCE" = "fetchers" ]; then
+    bouncefetchers
+    echo " 🤺 ready Freddie"
+  elif [ "$BOUNCE" = "server" ]; then
+    bounceserver
+    echo " 🤓 it's ALIVE"
+  elif [ "$BOUNCE" = "all" ]; then
+    bounceserver
+    bouncefetchers
+    echo " 🌀 have a nice day"
+  else
+    wiredenrollstamp
     echo " 🤙 party on dudes"
   fi
 }
 
-wqmake () {
-  docker exec -it we-server bash -c 'source ~/.bashrc; cd /opt/apps/benefits; make; script/fetcher_cluster restart'
-}
+alias weamke='wemake'
+
+# wqmake () {
+#   docker exec -it we-server bash -c 'source ~/.bashrc; cd /opt/apps/benefits; make; script/fetcher_cluster restart'
+# }
+
+#bounceserver () {
+#  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/spin around"
+#}
+#
+#bouncefetchers () {
+#  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/fetcher_cluster restart"
+#}
 
 bounceserver () {
-  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/spin around"
+  docker exec gandalf bash -c 'su -c "cd /opt/apps/enroll && script/spin around" astarr'
 }
 
 bouncefetchers () {
-  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/fetcher_cluster restart"
+  docker exec gandalf bash -c 'su -c "cd /opt/apps/enroll && script/fetcher_cluster restart" astarr'
 }
 
-makequote () {
-  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/benefits && make"
+wqmake () {
+  docker exec dumbledore bash -c 'su -c "cd /opt/apps/benefits && make && script/fetcher_cluster restart" astarr'
 }
 
 bouncequotefetchers () {
-  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/benefits && script/fetcher_cluster restart"
+  docker exec dumbledore bash -c 'su -c "cd /opt/apps/benefits && script/fetcher_cluster restart" astarr'
 }
 
 # update all current branches and rebuild and bounce fetchers
@@ -149,7 +197,8 @@ signdocs () {
 }
 
 copynewbranchhash () {
-  echo -e "\`$(git hist --no-color | head -n 1 | sed 's/:.*$//g')\`" | pbcopy
+  git branch | grep '^\*' | awk '{print "branch: `"$2"`\n---\n"}' | pbcopy
+  #echo -e "\`$(git hist --no-color | head -n 1 | sed 's/:.*$//g')\`" | pbcopy
 }
 
 fixpackagelock () {
@@ -158,29 +207,6 @@ fixpackagelock () {
   then
     rm package-lock.json
     touch package-lock.json
-  fi
-}
-
-teststagemerge () {
-  if [ -z "$(git status --porcelain)" ]; then
-    FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
-      textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
-    else
-      textbanner "never mind"
-    fi
-    #git fetch -p
-    #git checkout stage
-    #git pull
-    #git merge $FEATURE_BRANCH
-    if [ "$?" -eq "0" ]
-    then
-      #pwd | grep Quote && wqmake || wemake
-      #git push
-      echo "go go gone"
-    else
-      textbanner "WHOOPS!"
-    fi
   fi
 }
 
@@ -193,12 +219,53 @@ stagemerge () {
     fi
     git fetch -p
     git checkout stage
-    git pull
+    git pull origin stage
+    git checkout -b "stage-plus-$FEATURE_BRANCH"
     git merge $FEATURE_BRANCH
     if [ "$?" -eq "0" ]
     then
       pwd | grep Quote && wqmake || wemake
+      git push -u origin "stage-plus-$FEATURE_BRANCH"
+    else
+      textbanner "WHOOPS!"
+    fi
+  fi
+}
+
+teststagemerge () {
+  if [ -z "$(git status --porcelain)" ]; then
+    FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    STAGEPLUSNAME="stage-plus-$FEATURE_BRANCH"
+    textbanner "$FEATURE_BRANCH"
+    echo "Prepping $FEATURE_BRANCH to become $STAGEPLUSNAME"
+    if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
+      textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
       git push
+    fi
+    git fetch -p
+    BRANCH_COUNT=$(git branch -a | grep "\bstage-plus-kaiser-current-medical-only-letters$" | wc -l | awk '{print $1}')
+    if [ "$BRANCH_COUNT" -eq "0" ]
+    then
+      git checkout stage
+      git pull
+      git checkout -b "$STAGEPLUSNAME"
+    else
+      git checkout "$STAGEPLUSNAME"
+      git pull
+      git pull origin stage
+    fi
+
+    git merge $FEATURE_BRANCH
+
+    if [ "$?" -eq "0" ]
+    then
+      pwd | grep Quote && wqmake || wemake
+      if [ "$?" -eq "0" ]
+      then
+        git push -u origin "$STAGEPLUSNAME"
+      else
+        textbanner "Build failed!"
+      fi
     else
       textbanner "WHOOPS!"
     fi
