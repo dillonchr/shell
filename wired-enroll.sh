@@ -243,7 +243,7 @@ teststagemerge () {
       git push
     fi
     git fetch -p
-    BRANCH_COUNT=$(git branch -a | grep "\bstage-plus-kaiser-current-medical-only-letters$" | wc -l | awk '{print $1}')
+    BRANCH_COUNT=$(git branch -a | grep "\b${STAGEPLUSNAME}$" | wc -l | awk '{print $1}')
     if [ "$BRANCH_COUNT" -eq "0" ]
     then
       git checkout stage
