@@ -60,38 +60,6 @@ EOL
     fi
 }
 
-#wemake () {
-#  BOUNCE=$1
-#  version=dev make -C ~/work/Wired-Enroll
-#  if [ "$?" -ne "0" ]
-#  then
-#    echo "🤯 client broke!"
-#    return 1
-#  fi
-#
-#  version=dev make -C ~/work/Wired-Enroll-Server
-#  if [ "$?" -ne "0" ]
-#  then
-#    echo "🤬 server broke!"
-#    return 2
-#  fi
-#
-#  if [ "$BOUNCE" = "fetchers" ]; then
-#    bouncefetchers
-#    echo " 🤺 ready Freddie"
-#  elif [ "$BOUNCE" = "server" ]; then
-#    bounceserver
-#    echo " 🤓 it's ALIVE"
-#  elif [ "$BOUNCE" = "all" ]; then
-#    bounceserver
-#    bouncefetchers
-#    echo " 🌀 have a nice day"
-#  else
-#    wiredenrollstamp
-#    echo " 🤙 party on dudes"
-#  fi
-#}
-
 wemake() {
   BOUNCE=$1
   version=dev make -C ~/Development/Wired-Enroll
@@ -125,18 +93,6 @@ wemake() {
 }
 
 alias weamke='wemake'
-
-# wqmake () {
-#   docker exec -it we-server bash -c 'source ~/.bashrc; cd /opt/apps/benefits; make; script/fetcher_cluster restart'
-# }
-
-#bounceserver () {
-#  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/spin around"
-#}
-#
-#bouncefetchers () {
-#  docker exec we-server bash -c "source ~/.bashrc && cd /opt/apps/enroll && script/fetcher_cluster restart"
-#}
 
 bounceserver () {
   docker exec gandalf bash -c 'su -c "cd /opt/apps/enroll && script/spin around" astarr'
@@ -198,7 +154,6 @@ signdocs () {
 
 copynewbranchhash () {
   git branch | grep '^\*' | awk '{print "branch: `"$2"`\n---\n"}' | pbcopy
-  #echo -e "\`$(git hist --no-color | head -n 1 | sed 's/:.*$//g')\`" | pbcopy
 }
 
 fixpackagelock () {
@@ -211,28 +166,6 @@ fixpackagelock () {
 }
 
 stagemerge () {
-  if [ -z "$(git status --porcelain)" ]; then
-    FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-    if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
-      textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
-      git push
-    fi
-    git fetch -p
-    git checkout stage
-    git pull origin stage
-    git checkout -b "stage-plus-$FEATURE_BRANCH"
-    git merge $FEATURE_BRANCH
-    if [ "$?" -eq "0" ]
-    then
-      pwd | grep Quote && wqmake || wemake
-      git push -u origin "stage-plus-$FEATURE_BRANCH"
-    else
-      textbanner "WHOOPS!"
-    fi
-  fi
-}
-
-teststagemerge () {
   if [ -z "$(git status --porcelain)" ]; then
     FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     STAGEPLUSNAME="stage-plus-$FEATURE_BRANCH"
@@ -272,6 +205,8 @@ teststagemerge () {
   fi
 }
 
+alias -g teststagemerge="stagemerge"
+
 blames () {
   FILE_TO_BLAME="$1"
   mkdir -p blames
@@ -283,7 +218,7 @@ blames () {
 }
 
 expirationdates () {
-  cd ~/work/Wired-Enroll
+  cd ~/Development/wired-enroll
   ggg 'expirationDate: "' | awk '{print $3, $1}' | sort
 }
 
