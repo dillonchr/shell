@@ -29,3 +29,17 @@ kpwaappts () {
   mv "$WA" build/script/kaiser_agents/kpwa-appointed.xlsx
   ./build/script/kaiser_agents/update_kaiser_agents.sh
 }
+
+uhcappts () {
+  if [ "$#" -ne 1 ]; then
+    echo "Requires 1 param, the path to UHC sheet."
+    return 1
+  fi
+
+  WA="$1"
+
+  textbanner "UHC $(ts)"
+  pushd ~/Development/wired-config
+  mv "$WA" build/script/uhc_agents/uhc-appointed.xlsx
+  ./build/script/uhc_agents/update_uhc_agents.sh
+}
