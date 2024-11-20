@@ -166,11 +166,17 @@ fixpackagelock () {
 }
 
 stagemerge () {
+  copynewbranchhash
   if [ -z "$(git status --porcelain)" ]; then
     FEATURE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
     STAGEPLUSNAME="stage-plus-$FEATURE_BRANCH"
     textbanner "$FEATURE_BRANCH"
     echo "Prepping $FEATURE_BRANCH to become $STAGEPLUSNAME"
+    if [ "$#" -gt 0 ]
+    then
+      echo "Clearing out old $STAGEPLUSNAME branch"
+      git branch -D $STAGEPLUSNAME
+    fi
     if git status -sb | grep --quiet 'ahead \d\+]$'  ; then
       textbanner "pushing ${FEATURE_BRANCH}... because you forgot."
       git push

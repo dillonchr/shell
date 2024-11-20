@@ -2,7 +2,7 @@
 
 pdffields () {
   PDFPATH=$1
-  pdftk "$PDFPATH" dump_data_fields | grep -e "^FieldName: " | sed 's/FieldName: //' | sort
+  pdftk "$PDFPATH" dump_data_fields | awk -F ': ' '/^FieldName: /{print $2}' | sort
 }
 
 searchfields () {
@@ -15,7 +15,15 @@ searchfields () {
 }
 
 diffforms () {
-  pdffields "$1" > /tmp/a.txt
-  pdffields "$2" > /tmp/b.txt
-  git diff -b /tmp/a.txt /tmp/b.txt
+  PDFA=$(mktemp)
+  PDFB=$(mktemp)
+  if [ -f script/pdffields ];
+  then
+    script/pdffields "$1" > $PDFA
+    script/pdffields "$2" > $PDFB
+  else
+    pdffields "$1" > $PDFA
+    pdffields "$2" > $PDFB
+  fi
+  git diff -b $PDFA $PDFB
 }
