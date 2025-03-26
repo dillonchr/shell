@@ -63,7 +63,8 @@ gitprune () {
 
 # delete all local branches if you can
 cleanbranches () {
-  git branch -a --no-color | sed "/^  remotes\//d" | sed "/^*/d" | sed "/^  stage$/d" | xargs git branch -d
+  git branch --no-color | grep "^  stage-plus" | xargs git branch -D
+  git branch --no-color |  sed "/^*/d" | xargs git branch -d
 }
 
 # pull latest and also merge masta

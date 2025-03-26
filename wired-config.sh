@@ -30,6 +30,20 @@ kpwaappts () {
   ./build/script/kaiser_agents/update_kaiser_agents.sh
 }
 
+kporappts () {
+  if [ "$#" -ne 1 ]; then
+    echo "Requires 1 param, the path to KPOR sheet."
+    return 1
+  fi
+
+  OR="$1"
+
+  textbanner "KPOR $(ts)"
+  pushd ~/Development/wired-config
+  mv "$OR" build/script/kaiser_agents/kpor-appointed.xlsx
+  ./build/script/kaiser_agents/update_kaiser_agents.sh
+}
+
 uhcappts () {
   if [ "$#" -ne 1 ]; then
     echo "Requires 1 param, the path to UHC sheet."
@@ -42,4 +56,30 @@ uhcappts () {
   pushd ~/Development/wired-config
   mv "$WA" build/script/uhc_agents/uhc-appointed.xlsx
   ./build/script/uhc_agents/update_uhc_agents.sh
+}
+
+connexionappts () {
+  if [ "$#" -ne 1 ]
+  then
+    echo "Requires 1 param, the path to the CONNEXION sheet."
+    return 1
+  fi
+  WA="$1"
+  textbanner "Connexion $(ts)"
+  pushd ~/Development/wired-config
+  node build/script/connexion_agents/translate_sheet_to_json.js "$WA" | head -n 50
+  echo "Look good? [yn]"
+  read answer
+  case "$answer" in
+    [nN]* ) echo "Okay, stopping short."
+      ;;
+    *) doconnexionapps "$WA"
+      ;;
+  esac
+}
+
+doconnexionapps () {
+  pushd ~/Development/wired-config
+  mv "$1" build/script/connexion_agents/connexion-appointed.xlsx
+  ./build/script/connexion_agents/update_connexion_agents.sh
 }
