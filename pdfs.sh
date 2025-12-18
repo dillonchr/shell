@@ -15,15 +15,5 @@ searchfields () {
 }
 
 diffforms () {
-  PDFA=$(mktemp)
-  PDFB=$(mktemp)
-  if [ -f script/pdffields ];
-  then
-    script/pdffields "$1" > $PDFA
-    script/pdffields "$2" > $PDFB
-  else
-    pdffields "$1" > $PDFA
-    pdffields "$2" > $PDFB
-  fi
-  git diff -b $PDFA $PDFB
+  git diff -b <(pdffields "$1") <(pdffields "$2")
 }

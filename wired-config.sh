@@ -14,6 +14,12 @@ regenceappts () {
   mv "$OR" build/script/regence_agents/or-cc-appointed.xlsx
   mv "$WA" build/script/regence_agents/wa-asuris-appointed.xlsx
   ./build/script/regence_agents/update_regence_agents.sh
+  textbanner "COCE ALERT!"
+  echo
+  echo "You have to be sure that you try applying the sql locally before pushing."
+  echo "cat build/script/regence_agents/agent_updates.sql | pbcopy"
+  cat build/script/regence_agents/agent_updates.sql | pbcopy
+  open "http://localhost:8080/"
 }
 
 kpwaappts () {

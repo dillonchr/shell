@@ -103,7 +103,7 @@ bouncefetchers () {
 }
 
 wqmake () {
-  docker exec dumbledore bash -c 'su -c "cd /opt/apps/benefits && make && script/fetcher_cluster restart" astarr'
+  docker exec dumbledore bash -c 'su -c "cd /opt/apps/benefits && make clean all && script/fetcher_cluster restart" astarr'
 }
 
 bouncequotefetchers () {
@@ -153,7 +153,7 @@ signdocs () {
 }
 
 copynewbranchhash () {
-  git branch | grep '^\*' | awk '{print "branch: `"$2"`\n---\n"}' | pbcopy
+  git branch | grep '^\*' | awk '{print "branch: `"$2"`\n---\n"}' |  sed -r 's/stage-plus-//' | pbcopy
 }
 
 fixpackagelock () {
@@ -202,6 +202,14 @@ stagemerge () {
       if [ "$?" -eq "0" ]
       then
         git push -u origin "$STAGEPLUSNAME"
+        if pwd | grep -q quote; then
+          PROJ="wired-quote"
+        elif pwd | grep -q wired-enroll-server; then
+          PROJ="wired-enroll-server"
+        else
+          PROJ="wired-enroll"
+        fi
+        echo "https://bitbucket.org/bsiprojectjedan/${PROJ}/pull-requests/new?source=${STAGEPLUSNAME}&dest=bsiprojectjedan%2F${PROJ}%3A%3Astage&event_source=branch_detail"
       else
         textbanner "Build failed!"
       fi
@@ -212,6 +220,17 @@ stagemerge () {
 }
 
 alias -g teststagemerge="stagemerge"
+
+stagebb () {
+  if pwd | grep -q quote; then
+    PROJ="wired-quote"
+  elif pwd | grep -q wired-enroll-server; then
+    PROJ="wired-enroll-server"
+  else
+    PROJ="wired-enroll"
+  fi
+  echo "https://bitbucket.org/bsiprojectjedan/${PROJ}/pull-requests/new?source=${STAGEPLUSNAME}&dest=bsiprojectjedan%2F${PROJ}%3A%3Astage&event_source=branch_detail"
+}
 
 blames () {
   FILE_TO_BLAME="$1"
@@ -231,3 +250,21 @@ expirationdates () {
 servercheck () {
   grep 'us-west-' /etc/hosts | awk '{print $2}' | xargs -I {} sh -c "ssh -o 'StrictHostKeyChecking no' astarr@{} 'hostname' || true"
 }
+
+_production_merge_commands () {
+    local wordcount="${#COMP_WORDS[@]}"
+    local wordtoexpand=$2
+    local previousindex=$(expr "${COMP_CWORD}" - 1)
+    local previousword="${COMP_WORDS[$previousindex]}"
+    local commandword="${COMP_WORDS[1]}"
+
+    case "${wordcount}" in
+        "2")
+            local commands=$(git branch)
+            COMPREPLY=($(compgen -W "${commands}" -- "${wordtoexpand}"))
+    esac
+}
+
+complete -o bashdefault -o default -o nospace -F _production_merge_commands production-merge
+complete -o bashdefault -o default -o nospace -F _production_merge_commands stage-merge
+complete -o bashdefault -o default -o nospace -F _production_merge_commands release-candidate
