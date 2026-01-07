@@ -93,24 +93,6 @@ nproc () {
   sysctl -n hw.physicalcpu
 }
 
-pushnote () {
-  CMD="display notification \"${1}\""
-  if [ -z "$2" ]; then
-    CMD="${CMD} with title \"iTerm2 / tmux\""
-  else
-    CMD="${CMD} with title \"${2}\""
-  fi
-  if [ -z "$3" ]; then
-    echo > $(mktemp)
-  else
-    CMD="${CMD} subtitle \"${3}\""
-  fi
-  CMD="${CMD} sound name \"Sosumi\""
-  TMP=$(mktemp)
-  echo $CMD > $TMP
-  osascript $TMP
-}
-
 dearkitty () {
   KITTY_BASE=~/git/kitty ~/git/kitty/dearkitty
 }
