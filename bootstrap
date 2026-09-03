@@ -1,7 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-for file in ${ZSHRC_D}/*.sh; do
-  [[ -r $file ]] && . $file
-done
-unset file
+ZSHRC_D="${ZSHRC_D:-$HOME/.config/shell}"
+
+if [[ -d "$ZSHRC_D" ]]; then
+  for _shell_script in "$ZSHRC_D"/*.sh; do
+    [[ -r "$_shell_script" ]] && . "$_shell_script"
+  done
+  unset _shell_script
+fi
 
